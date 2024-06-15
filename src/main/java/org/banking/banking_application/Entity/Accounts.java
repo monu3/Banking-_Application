@@ -16,12 +16,12 @@ public class Accounts {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public long id ;
+    public Long id ;
 
     @Column(name = "account_holder", nullable = false, length = 100)
     public String accountHolderName;
 
-    @Column(name = "account_number", nullable = true, length = 20)
+    @Column(name = "account_number", length = 20)
     public String accountNumber;
 
     @Column(name = "Balance", nullable = false, length = 100)
