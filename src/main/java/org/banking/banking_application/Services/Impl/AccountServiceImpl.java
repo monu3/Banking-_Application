@@ -9,7 +9,10 @@ import org.banking.banking_application.Services.AccountService;
 import org.springframework.stereotype.Service;
 
 import javax.security.auth.login.AccountNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -69,6 +72,45 @@ public class AccountServiceImpl implements AccountService {
         Accounts updatedAccounts = accountRepo.save(accounts);
         return AccountConverter.toAccountDto(updatedAccounts);
 
+    }
+
+    @Override
+    public AccountDto withdraw(Long id, double withAmount) throws AccountNotFoundException {
+        Accounts accounts = accountRepo.findById(id).orElseThrow(() -> new RuntimeException("Account not found"));
+        if(accounts.getBalance()<withAmount) {
+            throw new RuntimeException("Insufficient Balance");
+        }
+
+        double total = accounts.getBalance() - withAmount;
+        accounts.setBalance(total);
+        Accounts updatedAccounts = accountRepo.save(accounts);
+        return AccountConverter.toAccountDto(updatedAccounts);
+
+    }
+
+    @Override
+    public List<AccountDto> getsAllAccounts() {
+//        List<Accounts> accountsList = this.accountRepo.findAll();
+//        List<AccountDto> accountDtoList = new ArrayList<>();
+//
+//        for(Accounts account: accountsList) {
+//            accountDtoList.add(AccountConverter.toAccountDto(account));
+//
+//        }
+//
+//        return accountDtoList;
+
+        List<Accounts> accounts = accountRepo.findAll();
+         return accounts.stream().map(AccountConverter::toAccountDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteAccount(Long id) throws AccountNotFoundException {
+
+        Accounts accounts = accountRepo.findById(id).orElseThrow(() -> new AccountNotFoundException("Account does not exit !!!"));
+
+        accountRepo.deleteById(id);
     }
 
 }
